@@ -7,8 +7,12 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   eas-build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,4 +34,4 @@ jobs:
           token: ${{ secrets.EAS_TOKEN }}
 
       - name: Run EAS build
-        run: eas build --non-interactive
+        run: eas build --platform all --non-interactive
