@@ -10,6 +10,13 @@ import { DurableObject } from "cloudflare:workers";
  * - Provide RPC method for workflow to update step status
  */
 export class WorkflowStatusDO extends DurableObject {
+	private static readonly WORKFLOW_STEP_NAMES = [
+		"process data",
+		"wait 2 seconds",
+		"wait for approval",
+		"final",
+	] as const;
+
 	private stepStatuses: Map<string, string>;
 	private currentStep: string | null;
 	private workflowStatus: "running" | "completed" | "error";
@@ -33,13 +40,9 @@ export class WorkflowStatusDO extends DurableObject {
 			if (storedStatuses) {
 				this.stepStatuses = new Map(Object.entries(storedStatuses));
 			} else {
-				const steps = [
-					"process data",
-					"wait 2 seconds",
-					"wait for approval",
-					"final",
-				];
-				steps.forEach((s) => this.stepStatuses.set(s, "pending"));
+				WorkflowStatusDO.WORKFLOW_STEP_NAMES.forEach((stepName) => {
+					this.stepStatuses.set(stepName, "pending");
+				});
 			}
 
 			this.currentStep = storedCurrent ?? null;
@@ -75,8 +78,8 @@ export class WorkflowStatusDO extends DurableObject {
 			this.currentStep = stepName;
 		}
 
-		const allCompleted = Array.from(this.stepStatuses.values()).every(
-			(s) => s === "completed",
+		const allCompleted = WorkflowStatusDO.WORKFLOW_STEP_NAMES.every(
+			(stepName) => this.stepStatuses.get(stepName) === "completed",
 		);
 		if (allCompleted) {
 			this.workflowStatus = "completed";
