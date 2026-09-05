@@ -21,14 +21,11 @@ permissions:
 
 jobs:
   eas-build:
-    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - android
-          - ios
+        platform: ${{ fromJSON(github.event_name == 'workflow_dispatch' && format('["{0}"]', inputs.build_platform) || '["android","ios"]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,28 +49,3 @@ jobs:
       - name: Run EAS build
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         run: eas build --platform "${{ matrix.platform }}" --non-interactive
-
-  eas-build-manual:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: 16.16.1
-          token: ${{ secrets.EAS_TOKEN }}
-
-      - name: Run EAS build
-        run: eas build --platform "${{ inputs.build_platform }}" --non-interactive
