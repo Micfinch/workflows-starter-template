@@ -40,10 +40,10 @@ jobs:
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: 16.16.1
           token: ${{ secrets.EAS_TOKEN }}
 
       - name: Run EAS build
         env:
-          BUILD_PLATFORM: ${{ github.event.inputs.build_platform || 'android' }}
+          BUILD_PLATFORM: ${{ github.event_name == 'workflow_dispatch' && inputs.build_platform || 'android' }}
         run: eas build --platform "${BUILD_PLATFORM}" --non-interactive
