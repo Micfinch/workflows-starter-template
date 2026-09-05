@@ -6,6 +6,16 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+    inputs:
+      build_platform:
+        description: Platform to build
+        required: false
+        default: android
+        type: choice
+        options:
+          - android
+          - ios
+          - all
 
 permissions:
   contents: read
@@ -34,4 +44,6 @@ jobs:
           token: ${{ secrets.EAS_TOKEN }}
 
       - name: Run EAS build
-        run: eas build --platform all --non-interactive
+        env:
+          BUILD_PLATFORM: ${{ github.event.inputs.build_platform || 'android' }}
+        run: eas build --platform "${BUILD_PLATFORM}" --non-interactive
