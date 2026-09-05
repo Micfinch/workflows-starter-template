@@ -39,6 +39,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify EAS CLI
+        run: npx eas-cli@16.16.1 --version
+
       - name: Run EAS build
         if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.EAS_TOKEN != ''
         env:
