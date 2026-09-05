@@ -40,12 +40,12 @@ jobs:
         run: npm ci
 
       - name: Setup EAS
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.EAS_TOKEN != ''
         uses: expo/expo-github-action@v8
         with:
           eas-version: 16.16.1
           token: ${{ secrets.EAS_TOKEN }}
 
       - name: Run EAS build
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.EAS_TOKEN != ''
         run: eas build --platform "${{ matrix.platform }}" --non-interactive
