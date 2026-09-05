@@ -22,6 +22,8 @@ permissions:
 jobs:
   eas-build:
     runs-on: ubuntu-latest
+    env:
+      EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +45,7 @@ jobs:
         run: npx eas-cli@16.16.1 --version
 
       - name: Run EAS build
-        if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.EAS_TOKEN != ''
+        if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && env.EAS_TOKEN != ''
         env:
-          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
+          EXPO_TOKEN: ${{ env.EAS_TOKEN }}
         run: npx eas-cli@16.16.1 build --platform "${{ matrix.platform }}" --non-interactive
