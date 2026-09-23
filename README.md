@@ -26,6 +26,8 @@ npm run dev
 
 Visit `http://localhost:5173` to see the interactive demo.
 
+> For better readability of CLI output while developing, use a terminal width of at least 120 columns.
+
 ### Deployment
 
 ```bash
